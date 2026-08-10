@@ -13,11 +13,11 @@ class TheatreBooking(Document):
         self.validate_booking_date()
         self.validate_status()
         self.validate_cancellation_time()
+        self.validate_cancellation_transition()
         self.set_booking_amount()
 
     # ---------------------------------------------------------
-    # Validation 1:
-    # Cannot book a show whose date has already passed
+    # 1. Cannot book a show whose date has already passed
     # ---------------------------------------------------------
     def validate_show_date(self):
         if not self.show:
@@ -35,15 +35,13 @@ class TheatreBooking(Document):
             )
 
     # ---------------------------------------------------------
-    # Validation 2:
-    # Prevent duplicate booking of the same seat
+    # 2. Prevent duplicate booking of the same seat
     # ---------------------------------------------------------
     def validate_duplicate_seat(self):
-
         if not self.show or not self.seat_number:
             return
 
-        # Cancelled bookings do not occupy seats
+        # Cancelled booking does not occupy the seat
         if self.status == "Cancelled":
             return
 
@@ -63,11 +61,9 @@ class TheatreBooking(Document):
             )
 
     # ---------------------------------------------------------
-    # Validation 3:
-    # Seat number must be between 1 and Total Seats
+    # 3. Seat number must be between 1 and Total Seats
     # ---------------------------------------------------------
     def validate_seat_number(self):
-
         if not self.show or not self.seat_number:
             return
 
@@ -79,7 +75,6 @@ class TheatreBooking(Document):
 
         try:
             seat_number = int(self.seat_number)
-
         except (ValueError, TypeError):
             frappe.throw(
                 "Seat Number must be a valid number."
@@ -96,36 +91,28 @@ class TheatreBooking(Document):
             )
 
     # ---------------------------------------------------------
-    # Validation 4:
-    # Booking Date cannot be in the past
+    # 4. Booking Date cannot be in the past
     # ---------------------------------------------------------
     def validate_booking_date(self):
-
         if self.booking_date:
-
             if getdate(self.booking_date) < getdate(today()):
                 frappe.throw(
                     "Booking Date cannot be in the past."
                 )
 
     # ---------------------------------------------------------
-    # Validation 5:
-    # Status must be Booked or Cancelled
+    # 5. Status must be Booked or Cancelled
     # ---------------------------------------------------------
     def validate_status(self):
-
         if self.status not in ["Booked", "Cancelled"]:
             frappe.throw(
                 "Invalid booking status."
             )
 
     # ---------------------------------------------------------
-    # Validation 6:
-    # Cancellation is not allowed after show starts
+    # 6. Cancellation must happen before show starts
     # ---------------------------------------------------------
     def validate_cancellation_time(self):
-
-        # Only check when cancelling
         if self.status != "Cancelled":
             return
 
@@ -162,11 +149,39 @@ class TheatreBooking(Document):
             )
 
     # ---------------------------------------------------------
-    # Validation 7:
-    # Automatically get Ticket Price from Theatre Show
+    # 7. Prevent invalid cancellation status transition
+    # ---------------------------------------------------------
+    def validate_cancellation_transition(self):
+
+        # New booking must always start as Booked
+        if self.is_new():
+            if self.status != "Booked":
+                frappe.throw(
+                    "A new booking must have status 'Booked'."
+                )
+
+        # Existing booking
+        else:
+            old_status = self.get_db_value("status")
+
+            # Cancelled cannot be changed back to Booked
+            if old_status == "Cancelled" and self.status == "Booked":
+                frappe.throw(
+                    "A cancelled booking cannot be changed back to Booked."
+                )
+
+            # Cancelled remains Cancelled
+            if old_status == "Cancelled" and self.status == "Cancelled":
+                return
+
+            # Booked -> Cancelled is allowed
+            if old_status == "Booked" and self.status == "Cancelled":
+                return
+
+    # ---------------------------------------------------------
+    # 8. Automatically get Ticket Price from Theatre Show
     # ---------------------------------------------------------
     def set_booking_amount(self):
-
         if not self.show:
             return
 
