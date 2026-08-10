@@ -9,6 +9,7 @@ class TheatreBooking(Document):
         self.validate_show_date()
         self.validate_duplicate_seat()
         self.validate_seat_number()
+        self.validate_booking_date()
         self.set_booking_amount()
 
     def validate_show_date(self):
@@ -66,6 +67,13 @@ class TheatreBooking(Document):
             frappe.throw(
                 f"Seat Number cannot be greater than {total_seats}."
             )
+
+    def validate_booking_date(self):
+        if self.booking_date:
+            if getdate(self.booking_date) < getdate(today()):
+                frappe.throw(
+                    "Booking Date cannot be in the past."
+                )
 
     def set_booking_amount(self):
         if not self.show:
