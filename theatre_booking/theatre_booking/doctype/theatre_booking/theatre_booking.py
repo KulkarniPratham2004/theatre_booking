@@ -9,6 +9,7 @@ class TheatreBooking(Document):
         self.validate_show_date()
         self.validate_duplicate_seat()
         self.validate_seat_number()
+        self.set_booking_amount()
 
     def validate_show_date(self):
         if not self.show:
@@ -65,3 +66,15 @@ class TheatreBooking(Document):
             frappe.throw(
                 f"Seat Number cannot be greater than {total_seats}."
             )
+
+    def set_booking_amount(self):
+        if not self.show:
+            return
+
+        ticket_price = frappe.db.get_value(
+            "Theatre Show",
+            self.show,
+            "ticket_price"
+        )
+
+        self.amount = ticket_price or 0
