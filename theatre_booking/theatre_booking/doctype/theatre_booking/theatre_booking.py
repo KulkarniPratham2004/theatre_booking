@@ -1,6 +1,7 @@
 import frappe
 from frappe.model.document import Document
-from frappe.utils import getdate, today
+from frappe.utils import getdate, today, get_time, now_datetime
+from datetime import datetime
 
 
 class TheatreBooking(Document):
@@ -11,6 +12,7 @@ class TheatreBooking(Document):
         self.validate_seat_number()
         self.validate_booking_date()
         self.validate_status()
+        self.validate_cancellation_time()
         self.set_booking_amount()
 
     # ---------------------------------------------------------
@@ -35,17 +37,13 @@ class TheatreBooking(Document):
     # ---------------------------------------------------------
     # Validation 2:
     # Prevent duplicate booking of the same seat
-    # for the same show.
-    #
-    # Cancelled bookings are ignored because their seats
-    # should become available again.
     # ---------------------------------------------------------
     def validate_duplicate_seat(self):
 
         if not self.show or not self.seat_number:
             return
 
-        # A cancelled booking does not occupy a seat
+        # Cancelled bookings do not occupy seats
         if self.status == "Cancelled":
             return
 
@@ -112,7 +110,7 @@ class TheatreBooking(Document):
 
     # ---------------------------------------------------------
     # Validation 5:
-    # Status must be either Booked or Cancelled
+    # Status must be Booked or Cancelled
     # ---------------------------------------------------------
     def validate_status(self):
 
@@ -123,6 +121,48 @@ class TheatreBooking(Document):
 
     # ---------------------------------------------------------
     # Validation 6:
+    # Cancellation is not allowed after show starts
+    # ---------------------------------------------------------
+    def validate_cancellation_time(self):
+
+        # Only check when cancelling
+        if self.status != "Cancelled":
+            return
+
+        if not self.show:
+            return
+
+        show_data = frappe.db.get_value(
+            "Theatre Show",
+            self.show,
+            ["show_date", "show_time"],
+            as_dict=True
+        )
+
+        if not show_data:
+            frappe.throw(
+                "Theatre Show could not be found."
+            )
+
+        if not show_data.show_date or not show_data.show_time:
+            frappe.throw(
+                "Show Date and Show Time are required."
+            )
+
+        show_datetime = datetime.combine(
+            getdate(show_data.show_date),
+            get_time(show_data.show_time)
+        )
+
+        current_datetime = now_datetime()
+
+        if current_datetime >= show_datetime:
+            frappe.throw(
+                "Booking cannot be cancelled because the show has already started."
+            )
+
+    # ---------------------------------------------------------
+    # Validation 7:
     # Automatically get Ticket Price from Theatre Show
     # ---------------------------------------------------------
     def set_booking_amount(self):
