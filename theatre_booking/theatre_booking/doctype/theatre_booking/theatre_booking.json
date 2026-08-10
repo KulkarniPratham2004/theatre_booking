@@ -9,7 +9,8 @@
   "show",
   "seat_number",
   "booking_date",
-  "amount"
+  "amount",
+  "status"
  ],
  "fields": [
   {
@@ -40,13 +41,21 @@
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount"
+  },
+  {
+   "default": "Booked",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Booked\nCancelled",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-08 15:14:25.659829",
- "modified_by": "Administrator",
+ "modified": "2026-08-10 09:53:29.372112",
+ "modified_by": "ikulkarniprathmesh@gmail.com",
  "module": "Theatre Booking",
  "name": "Theatre Booking",
  "owner": "ikulkarniprathmesh@gmail.com",
