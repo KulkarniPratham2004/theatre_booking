@@ -1,6 +1,11 @@
 {
- "charts": [],
- "content": "[]",
+ "charts": [
+  {
+   "chart_name": "Theatre Show Status",
+   "label": "Theatre Show Status"
+  }
+ ],
+ "content": "[{\"id\": \"theatre_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Theatre Booking</b></span>\", \"col\": 12}}, {\"id\": \"show_shortcut\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Theatre Show\", \"col\": 3}}, {\"id\": \"customer_shortcut\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Theatre Customer\", \"col\": 3}}, {\"id\": \"booking_shortcut\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Theatre Booking\", \"col\": 3}}, {\"id\": \"report_shortcut\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Show Seat Availability\", \"col\": 3}}, {\"id\": \"theatre_spacer\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"theatre_show_status_chart\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Theatre Show Status\", \"col\": 12}}]",
  "creation": "2026-08-10 17:17:42.613385",
  "custom_blocks": [],
  "docstatus": 0,
@@ -10,8 +15,67 @@
  "indicator_color": "green",
  "is_hidden": 0,
  "label": "Theatre Booking Dashboard",
- "links": [],
- "modified": "2026-08-10 17:17:42.613385",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Theatre Booking",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Theatre Show",
+   "link_count": 0,
+   "link_to": "Theatre Show",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Theatre Customer",
+   "link_count": 0,
+   "link_to": "Theatre Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Theatre Booking",
+   "link_count": 0,
+   "link_to": "Theatre Booking",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Show Seat Availability",
+   "link_count": 0,
+   "link_to": "Show Seat Availability",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-08-11 14:46:01.189289",
  "modified_by": "Administrator",
  "module": "Theatre Booking",
  "name": "Theatre Booking Dashboard",
@@ -19,8 +83,47 @@
  "owner": "Administrator",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Customer"
+  },
+  {
+   "role": "Theatre Manager"
+  },
+  {
+   "role": "Booking Desk"
+  }
+ ],
  "sequence_id": 0.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "doc_view": "List",
+   "label": "Theatre Show",
+   "link_to": "Theatre Show",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Theatre Customer",
+   "link_to": "Theatre Customer",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Theatre Booking",
+   "link_to": "Theatre Booking",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Show Seat Availability",
+   "link_to": "Show Seat Availability",
+   "report_ref_doctype": "Theatre Show",
+   "type": "Report"
+  }
+ ],
  "title": "Theatre Booking Dashboard"
 }

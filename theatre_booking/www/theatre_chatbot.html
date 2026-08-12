@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Theatre Assistant</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chatbot {
+            width: 420px;
+            height: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #343a40;
+            color: white;
+            padding: 18px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .chat-subtitle {
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            max-width: 80%;
+            white-space: pre-line;
+        }
+
+        .bot {
+            background: #eeeeee;
+            color: #222;
+            margin-right: auto;
+        }
+
+        .user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #ddd;
+            background: white;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-input button {
+            margin-left: 8px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+
+        .typing {
+            font-style: italic;
+            color: #777;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="chatbot">
+
+    <div class="chat-header">
+
+        🎬 Theatre Assistant
+
+        <div class="chat-subtitle">
+            Theatre Booking Chatbot
+        </div>
+
+    </div>
+
+
+    <div
+        id="chat-messages"
+        class="chat-messages"
+    >
+
+        <div class="message bot">
+
+            Hello! 👋
+
+            I am your Theatre Assistant.
+
+            You can ask me about:
+            • Shows
+            • Bookings
+            • Revenue
+            • Occupancy
+            • Available seats
+            • Busiest movie
+
+        </div>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            type="text"
+            id="message"
+            placeholder="Ask something..."
+            autocomplete="off"
+        >
+
+        <button onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function addMessage(text, type) {
+
+    const messages =
+        document.getElementById("chat-messages");
+
+    const message =
+        document.createElement("div");
+
+    message.classList.add(
+        "message",
+        type
+    );
+
+    message.innerText = text;
+
+    messages.appendChild(message);
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById("message");
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    // Show user message
+    addMessage(message, "user");
+
+    // Clear input
+    input.value = "";
+
+    try {
+
+        const response = await fetch(
+            "/api/method/theatre_booking.api.theatre_chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body:
+                    "message=" +
+                    encodeURIComponent(message),
+
+                credentials: "same-origin"
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("Chatbot response:", data);
+
+        if (
+            data.message &&
+            data.message.reply
+        ) {
+
+            addMessage(
+                data.message.reply,
+                "bot"
+            );
+
+        } else if (data.exc) {
+
+            addMessage(
+                "Server error. Please check the Frappe console.",
+                "bot"
+            );
+
+            console.error(data.exc);
+
+        } else {
+
+            addMessage(
+                "I could not understand the server response.",
+                "bot"
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Chatbot error:",
+            error
+        );
+
+        addMessage(
+            "Unable to connect to the chatbot backend.",
+            "bot"
+        );
+    }
+}
+
+// Press Enter to send
+
+document
+    .getElementById("message")
+    .addEventListener(
+        "keypress",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
